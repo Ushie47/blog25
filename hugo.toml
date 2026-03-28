@@ -18,6 +18,18 @@ title = 'My New Hugo Project'
     pageRef = '/tags'
     weight = 30
 
+  [[menus.main]]
+    name = 'Personal'
+    pageRef = '/posts'
+    weight = 10
+    parent = 'Posts'
+
+  [[menus.main]]
+    name = 'Tech'
+    pageRef = '/posts'
+    weight = 20
+    parent = 'Posts'
+
 [module]
   [module.hugoVersion]
     extended = false
