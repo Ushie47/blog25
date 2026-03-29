@@ -1,1 +1,11 @@
-<p>Copyright {{ now.Year }}. All rights reserved.</p>
+{{ $oldest_date := (index .Site.RegularPages.ByDate 0).Date.Year }}
+{{ $newest_date := now.Year }}
+{{ $date_range := printf "%d–%d" $oldest_date $newest_date }}
+
+<div class="container-md">
+    <div class="row">
+        <div class="col">
+            <p>Copyright {{ $date_range }}. All rights reserved.</p>
+        </div>
+    </div>
+</div>
