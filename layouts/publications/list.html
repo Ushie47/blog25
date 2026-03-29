@@ -1,0 +1,38 @@
+{{ define "main" }}
+<div class="container-md">
+    <div class="row">
+        <div class="col">
+            <h1>{{ .Title }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ .Content }}
+        </div>
+    </div>
+    {{ range .Pages }}
+    <section>
+        <div class="row mt-2 pt-2">
+            <div class="col">
+                <a href="{{ .RelPermalink }}"><h2>{{ .LinkTitle }}</h2></a>
+                <p>
+                    {{- partial "author_list.html" (dict "page" . "max_authors" 10) -}}. 
+                    {{ with .Params.booktitle }}
+                    In: {{ . }}.
+                    {{ end }}
+                    {{ with .Params.date }}
+                    <time datetime="{{ . | time.Format "2006-01" }}">{{ . | time.Format "Jan 2006" }}</time>
+                    {{ end }}
+                </p>
+            </div>
+            <div class="row mt-0 pt-0">
+                <div class="col">
+                    {{ .Params.abstract | safeHTML | truncate 200 }}
+                </div>
+            </div>
+            {{ partial "publications/buttons.html" . }}
+        </div>
+    </section>
+    {{ end }}
+</div>
+{{ end }}

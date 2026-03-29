@@ -1,0 +1,41 @@
+{{ define "main" }}
+<div class="container-md">
+  <div class="row">
+    <div class="col">
+      <h1>{{ .Title }}</h1>
+      <p rel="author">{{ partial "author_list.html" (dict "page" . ) }}.</p>
+      {{ with .Date }}
+      <time datetime="{{ .Format "2006-01" }}">{{ .Format "January, 2006" }}</time>
+      {{ end }}
+    </div>
+  </div>
+  {{ partial "publications/buttons.html" . }}
+  {{ with .Params.abstract }}
+  <div class="row">
+    <div class="col">
+      <h2>Abstract</h2>
+      {{ . | markdownify }}
+    </div>
+  </div>
+  {{ end }}
+  <div class="row m-2 p-2">
+    {{ with .Params.booktitle }}
+    <div class="col-12 col-md-3 pub-row-heading">Publication</div>
+    <div class="col-12 col-md-9">{{ . }}</div>
+    {{ end }}
+    {{ if (and (.Params.publication_type) (ne .Params.publication_types "0")) }}
+      {{ partial "publications/pub_types.html" $ }}
+      {{ $pub_types := $.Scratch.Get "pub_types" }}
+      <div class="col-12 col-md-3 pub-row-heading">Type</div>
+      <div class="col-12 col-md-9">{{ index $pub_types (int .Params.publication_type) }}</div>
+    {{ end }}
+  </div>
+  {{ with .Content }}
+  <div class="row">
+    <div class="col">
+      {{ . }}
+    </div>
+  </div>
+  {{ end }}
+</div>
+{{ end }}

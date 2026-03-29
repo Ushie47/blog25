@@ -1,0 +1,27 @@
+{{ $page := . }}
+<div class="row mb-2 pb-2">
+    <div class="col">
+    {{- with $page.Params.pdf }}
+    {{ $url := . }}
+    {{ $finalURL := "" }}
+    {{ if or (hasPrefix $url "http://") (hasPrefix $url "https://") (hasPrefix $url "//") }}
+        {{ $finalURL = $url | urls.AbsURL }}
+    {{ else if hasPrefix $url "/" }}
+        {{ $finalURL = $url | relURL }}
+    {{ else }}
+        {{ with $page.Resources.GetMatch $url }}
+            {{ $finalURL = .RelPermalink }}
+        {{ else }}
+            {{ errorf "Failed to find page resource %q" $url }}
+        {{ end }}
+    {{ end }}
+        <button class="btn btn-outline-primary"><a href="{{ $finalURL }}">PDF</a></button>
+    {{ end }}
+    {{- with $page.Params.arxiv }}
+        <button class="btn btn-outline-primary"><a href="//arxiv.org/abs/{{ . }}">ArXiV</a></button>
+    {{ end }}
+    {{- with $page.Params.doi }}
+        <button class="btn btn-outline-primary"><a href="//doi.org/{{ . }}">DOI</a></button>
+    {{ end }}
+    </div>
+</div>

@@ -1,0 +1,16 @@
+{{ $page := .page }}
+{{ $authors := $page.Params.authors }}
+{{ $max_authors := -1 }}
+{{ with .max_authors }}
+    {{ $max_authors = . }}
+{{ end }}
+{{ $author_string := "" }}
+{{ $len_authors := ($authors | len) }}
+
+{{ if or (lt $max_authors 0) (ge $max_authors $len_authors)}}
+    {{ $author_string = (delimit $authors ", " " and ")}}
+{{ else }}
+    {{ $author_string = (delimit ($authors | first $max_authors | append "et al") ", ") -}}
+{{ end }}
+
+{{- $author_string -}}
