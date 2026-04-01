@@ -19,7 +19,9 @@ booktitle = ''
 # Publication type(s). Use a list — a paper can be both 'conference' and
 # 'preprint' if it was posted to arXiv before acceptance.
 # Valid values: conference, journal, preprint, thesis, book, bookchapter, other
-publication_types = []
+#
+# Uncomment the line below to add a publication type
+# publication_types = []
 
 # Date precision controls how the date is displayed.
 # Hugo always needs a full date internally, so if you only know the year,

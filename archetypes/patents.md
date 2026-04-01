@@ -18,7 +18,9 @@ assignee = ''
 #       { jurisdiction = "US", number = "US11234567B2" },
 #       { jurisdiction = "EP", number = "EP3456789A1"}
 #   ]
-identifiers = []
+#
+# Omit if not yet filed, otherwise uncomment the line below.
+# identifiers = []
 
 # Status: granted | pending | abandoned
 status = 'granted'

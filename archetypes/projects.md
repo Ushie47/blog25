@@ -12,7 +12,9 @@ status = 'active'    # active | completed | archived
 
 # Categories become a Hugo taxonomy — browsable at /categories/<term>/.
 # Use slugs: lowercase, hyphens, no spaces. e.g. ["machine-learning", "open-source"]
-categories = []
+#
+# Uncomment the line below if you wish to add any categories.
+# categories = []
 
 # Links
 github = ''    # e.g. "https://github.com/you/repo"
