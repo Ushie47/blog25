@@ -103,6 +103,23 @@ footer {
 }
 
 /* ---------------------------------------------------------------------------
+   Post body — required for Bootstrap scrollspy on a non-body element.
+   ScrollSpy needs overflow-y to be auto or scroll on the watched element.
+   Without this, scrollspy won't fire activate events correctly.
+--------------------------------------------------------------------------- */
+#post-body {
+  overflow-y: visible;  /* content flows normally */
+}
+
+/* ToC collapse — instant, no animation (scroll-driven feel) */
+#toc-nav .toc-children {
+  display: block;       /* collapse class sets display:none via Bootstrap */
+}
+#toc-nav .toc-children.collapse {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
    Utility: pub-row-heading (kept from your original CSS)
 --------------------------------------------------------------------------- */
 .pub-row-heading {

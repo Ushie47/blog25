@@ -50,6 +50,11 @@ title = 'My New Hugo Site'
 # extended = false means we don't need Hugo Extended (which adds Sass/SCSS).
 # We're using plain CSS, so the regular binary is fine.
 # ---------------------------------------------------------------------------
+# Summary length for post list pages (in words, Hugo default is 70).
+# We use .Content | plainify | truncate 500 in templates for character-accurate
+# truncation, so this setting is less critical but good to set explicitly.
+summaryLength = 100
+
 [module]
   [module.hugoVersion]
     extended = false
@@ -80,8 +85,6 @@ title = 'My New Hugo Site'
   # --- Integrations (leave blank to disable) ---
   google_analytics = ""   # e.g. "G-XXXXXXXXXX"
   disqus_shortname = ""   # e.g. "mysite"
-
-  primary_rgb = "55, 138, 221"   # matches pub_colors.conference
 
   # --- Publication type accent colours ---
   # These feed into CSS custom properties via Hugo Pipes (see assets/css/main.css).

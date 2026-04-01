@@ -1,0 +1,225 @@
+{{ define "main" }}
+
+{{/*
+  Single post page.
+
+  Layout (wide screens):
+    col-lg-9  — post content
+    col-lg-3  — sticky ToC (d-none d-lg-block — hidden on mobile)
+
+  ToC is only rendered if the post has 3+ headings.
+
+  Bootstrap scrollspy is applied to the post body, targeting the ToC nav.
+  This is separate from the navbar scrollspy on <body> — here we scope it
+  to the article element only.
+*/}}
+
+{{ $authors := .Params.authors | default slice }}
+{{ $authorDisplay := "" }}
+{{ if gt (len $authors) 0 }}
+  {{ $authorDisplay = delimit $authors ", " " and " }}
+{{ else }}
+  {{ $authorDisplay = site.Params.author_name }}
+{{ end }}
+
+{{/* Count headings to decide whether to show ToC */}}
+{{ $headings   := .Fragments.Headings }}
+{{ $showToc    := ge (len $headings) 3 }}
+
+<div class="container py-4">
+  <div class="row">
+
+    {{/* --- Main content column --- */}}
+    <div class="{{ if $showToc }}col-lg-9{{ else }}col-lg-8{{ end }}">
+
+      {{/* Hero image */}}
+      {{ with .Params.image }}
+        {{ $imgURL := "" }}
+        {{ if or (hasPrefix . "http://") (hasPrefix . "https://") }}
+          {{ $imgURL = . }}
+        {{ else if hasPrefix . "/" }}
+          {{ $imgURL = . | relURL }}
+        {{ else }}
+          {{ with $.Resources.GetMatch . }}
+            {{ $imgURL = .RelPermalink }}
+          {{ end }}
+        {{ end }}
+        {{ with $imgURL }}
+          <figure class="mb-4">
+            <img src="{{ . }}"
+                 alt="{{ $.Params.image_caption | default $.Title }}"
+                 class="img-fluid rounded">
+            {{ with $.Params.image_caption }}
+              <figcaption class="text-muted mt-1"
+                          style="font-size: 0.8rem; text-align: center;">
+                {{ . }}
+              </figcaption>
+            {{ end }}
+          </figure>
+        {{ end }}
+      {{ end }}
+
+      {{/* Post header */}}
+      <header class="mb-4">
+        {{/* Tags above title */}}
+        {{ with .Params.tags }}
+          <div class="d-flex flex-wrap gap-1 mb-2">
+            {{ range . }}
+              {{ $termPage := site.GetPage (printf "/tags/%s" (. | urlize)) }}
+              {{ if $termPage }}
+                <a href="{{ $termPage.RelPermalink }}"
+                   class="badge text-bg-light text-decoration-none"
+                   style="font-size: 0.7rem; font-weight: 500;">{{ . }}</a>
+              {{ end }}
+            {{ end }}
+          </div>
+        {{ end }}
+
+        <h1 class="mb-2">{{ .Title }}</h1>
+
+        <div class="d-flex flex-wrap align-items-center gap-2 text-muted"
+             style="font-size: 0.875rem;">
+          <span>{{ $authorDisplay }}</span>
+          <span>·</span>
+          <time datetime="{{ .Date.Format "2006-01-02" }}">
+            {{ .Date.Format "January 2, 2006" }}
+          </time>
+          <span>·</span>
+          <span>{{ .ReadingTime }} min read</span>
+        </div>
+      </header>
+
+      {{/*
+        Article body — wrapped in <article id="post-body"> so Bootstrap
+        scrollspy can target it independently of the page-level scrollspy
+        on <body> (which targets the navbar).
+      */}}
+      <article id="post-body">
+        {{ .Content }}
+      </article>
+
+      {{/* Related projects */}}
+      {{ with .Params.related_projects }}
+        <hr class="my-4">
+        <section>
+          <h2 class="h5 mb-3">Related projects</h2>
+          <div class="d-flex flex-column gap-2">
+            {{ range . }}
+              {{ $proj := site.GetPage . }}
+              {{ if $proj }}
+                <a href="{{ $proj.RelPermalink }}" class="text-decoration-none">
+                  <div class="card card-body py-2 px-3">
+                    <strong style="font-size: 0.9rem;">{{ $proj.Title }}</strong>
+                    {{ with $proj.Params.abstract }}
+                      <span class="text-muted" style="font-size: 0.825rem;">
+                        {{ . | truncate 120 }}
+                      </span>
+                    {{ end }}
+                  </div>
+                </a>
+              {{ else }}
+                {{/* Warn at build time if a related project path is broken */}}
+                {{ warnf "posts/single.html: related_project %q not found in page %s" . $.RelPermalink }}
+              {{ end }}
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+
+      {{/* Disqus placeholder — will be wired up with cookie consent later */}}
+      {{ if site.Params.disqus_shortname }}
+        <hr class="my-4">
+        <div id="disqus-container">
+          {{ partial "disqus.html" . }}
+        </div>
+      {{ end }}
+
+    </div>
+
+    {{/* --- ToC column (wide screens only) --- */}}
+    {{ if $showToc }}
+      <div class="col-lg-3 d-none d-lg-block">
+        {{ partial "posts/toc.html" . }}
+      </div>
+    {{ end }}
+
+  </div>
+</div>
+
+{{ end }}
+
+{{ define "scripts" }}
+{{ if .Fragments.Headings }}
+{{ if ge (len .Fragments.Headings) 3 }}
+<script>
+/*
+  ToC scrollspy + expand/collapse for nested h3 sections.
+
+  How it works:
+    1. Bootstrap scrollspy is initialised on #post-body, targeting #toc-nav.
+       It adds/removes the "active" class on ToC links as the user scrolls.
+    2. We listen to Bootstrap's activate.bs.scrollspy event to know which
+       link just became active.
+    3. When an h2-level link becomes active, we show its child <ul> (h3 list)
+       and collapse all other h2 child lists.
+    4. When an h3-level link becomes active, we ensure its parent h2's child
+       list stays open.
+
+  The ToC nav structure (built by toc.html):
+    <nav id="toc-nav">
+      <ul>
+        <li class="toc-h2">
+          <a href="#section-1">Section 1</a>
+          <ul class="toc-children collapse">   ← hidden until parent active
+            <li class="toc-h3"><a href="#subsection-1-1">...</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+*/
+
+(function () {
+  var postBody = document.getElementById('post-body');
+  var tocNav   = document.getElementById('toc-nav');
+  if (!postBody || !tocNav) return;
+
+  // Initialise Bootstrap scrollspy on the post body
+  new bootstrap.ScrollSpy(postBody, {
+    target: '#toc-nav',
+    smoothScroll: true,
+    offset: 80    // account for sticky navbar height
+  });
+
+  // Expand/collapse h3 lists on scrollspy activation
+  postBody.addEventListener('activate.bs.scrollspy', function (e) {
+    var activeLink = e.relatedTarget;  // the <a> that just became active
+    if (!activeLink) return;
+
+    var activeLi = activeLink.closest('li');
+    if (!activeLi) return;
+
+    var isH2 = activeLi.classList.contains('toc-h2');
+    var isH3 = activeLi.classList.contains('toc-h3');
+
+    if (isH2) {
+      // Collapse all h3 child lists, then open this one
+      tocNav.querySelectorAll('.toc-children').forEach(function (ul) {
+        ul.classList.add('collapse');
+      });
+      var children = activeLi.querySelector('.toc-children');
+      if (children) children.classList.remove('collapse');
+
+    } else if (isH3) {
+      // Keep the parent h2's child list open
+      var parentLi = activeLi.closest('.toc-h2');
+      if (parentLi) {
+        var children = parentLi.querySelector('.toc-children');
+        if (children) children.classList.remove('collapse');
+      }
+    }
+  });
+})();
+</script>
+{{ end }}
+{{ end }}
+{{ end }}

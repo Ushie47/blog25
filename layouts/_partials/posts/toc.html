@@ -1,0 +1,94 @@
+{{/*
+  posts/toc.html — sticky right-side table of contents.
+
+  Uses Hugo's .Fragments.Headings (Hugo 0.111+) which returns a structured
+  tree of headings with .ID, .Title, and .Headings (children).
+
+  We only render h2 and h3 — h2s are top-level items, h3s are nested under
+  their parent h2 in a <ul class="toc-children collapse"> that starts hidden
+  and is shown/hidden by the scrollspy JS in single.html.
+
+  The nav has id="toc-nav" so Bootstrap scrollspy (initialised in single.html)
+  can target it. Bootstrap scrollspy requires:
+    - <a href="#heading-id"> links
+    - the nav to be visible and in the DOM when scrollspy initialises
+
+  Sticky positioning: position:sticky + top offset accounts for the navbar.
+  We use a CSS variable --navbar-height that we'll set once we know the
+  navbar's actual rendered height. For now, 70px is a safe estimate.
+*/}}
+
+{{ $headings := .Fragments.Headings }}
+
+<nav id="toc-nav"
+     aria-label="Table of contents"
+     style="position: sticky;
+            top: 4.5rem;
+            max-height: calc(100vh - 5rem);
+            overflow-y: auto;
+            font-size: 0.825rem;">
+
+  <p class="text-muted mb-2 fw-500"
+     style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em;">
+    On this page
+  </p>
+
+  <ul class="nav flex-column" style="line-height: 1.4;">
+    {{ range $headings }}
+      {{/*
+        .Level gives the heading level (2 for h2, 3 for h3, etc.)
+        We only handle h2 (top-level) here. h3s are nested below their parent.
+        Hugo's .Fragments.Headings already gives us the tree — h3s appear
+        as .Headings children of their parent h2.
+      */}}
+      {{ if eq .Level 2 }}
+        {{ $hasChildren := gt (len .Headings) 0 }}
+        <li class="nav-item toc-h2">
+          <a class="nav-link py-1 px-0 text-muted"
+             href="#{{ .ID }}"
+             style="white-space: normal; word-break: break-word;">
+            {{ .Title }}
+          </a>
+
+          {{/* h3 children — start collapsed, opened by JS on scroll */}}
+          {{ if $hasChildren }}
+            <ul class="nav flex-column toc-children collapse ps-2 mb-1">
+              {{ range .Headings }}
+                {{ if eq .Level 3 }}
+                  <li class="nav-item toc-h3">
+                    <a class="nav-link py-1 px-0 text-muted"
+                       href="#{{ .ID }}"
+                       style="white-space: normal; word-break: break-word;
+                              font-size: 0.8rem;">
+                      {{ .Title }}
+                    </a>
+                  </li>
+                {{ end }}
+              {{ end }}
+            </ul>
+          {{ end }}
+        </li>
+      {{ end }}
+    {{ end }}
+  </ul>
+
+</nav>
+
+{{/*
+  ToC link styling — active state set by Bootstrap scrollspy.
+  We inject a small <style> here rather than in main.css because it's
+  tightly coupled to this partial and easy to find/change together.
+*/}}
+<style>
+  #toc-nav .nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 500;
+  }
+  #toc-nav .nav-link:hover {
+    color: var(--bs-primary) !important;
+  }
+  /* Smooth show/hide for child lists */
+  #toc-nav .toc-children {
+    transition: none;   /* collapse is instant — scroll-driven, not click-driven */
+  }
+</style>
