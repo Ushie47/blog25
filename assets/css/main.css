@@ -222,3 +222,12 @@ main {
 a {
   text-decoration: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Add padding to blockquotes and a subtle left border to make them stand out
+   more.
+--------------------------------------------------------------------------- */
+blockquote {
+  padding-left: 1rem;
+  border-left: 3px solid var(--bs-border-color);
+}
