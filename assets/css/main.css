@@ -26,26 +26,61 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Full-height layout
-   Forces the footer to the bottom of the viewport even on short pages.
-   The flexbox column approach is more reliable than sticky footers with
-   absolute positioning.
+   Shrinking navbar
+   The navbar starts tall (--navbar-tall-padding top+bottom) and collapses
+   to Bootstrap's default (~8px padding) when .navbar-scrolled is added by JS.
+
+   We use padding-top on body equal to the tall navbar height so content
+   isn't hidden underneath the fixed navbar. This also transitions smoothly.
+
+   Calculation:
+     tall navbar height ≈ brand font-size (1.5rem ≈ 24px) + 2 × tall padding
+     --navbar-tall-py: 1.25rem (20px) → total ≈ 64px
+     collapsed height ≈ 24px + 2 × 8px = 40px → Bootstrap adds borders → ~56px
 --------------------------------------------------------------------------- */
-html, body {
-  height: 100%;
+:root {
+  --navbar-tall-py:      1.25rem;
+  --navbar-short-py:     0.5rem;
+  --navbar-tall-height:  4rem;    /* approximate — used for body padding-top */
+  --navbar-short-height: 3.5rem;  /* Bootstrap default */
+}
+
+#main-navbar {
+  padding-top:    var(--navbar-tall-py);
+  padding-bottom: var(--navbar-tall-py);
+  transition: padding 0.3s ease, box-shadow 0.3s ease;
+}
+
+#main-navbar.navbar-scrolled {
+  padding-top:    var(--navbar-short-py);
+  padding-bottom: var(--navbar-short-py);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
 }
 
 body {
-  display: flex;
-  flex-direction: column;
+  padding-top: var(--navbar-tall-height);
+  transition: padding-top 0.3s ease;
 }
 
+body.navbar-scrolled {
+  padding-top: var(--navbar-short-height);
+}
+
+/* ---------------------------------------------------------------------------
+   Full-height layout
+   Forces the footer to the bottom of the viewport even on short pages.
+
+   We use min-height: calc(100vh - ...) on <main> rather than flexbox on
+   <body>, because flexbox on the body breaks position:sticky on the navbar.
+   position:sticky requires the sticky element's scroll container to be the
+   viewport — a flex body creates an internal scroll context that prevents this.
+
+   We can't know the exact navbar + footer height at CSS authoring time, so
+   we use a reasonable estimate (4rem navbar + 4rem footer = 8rem).
+   If your footer is taller, increase this value.
+--------------------------------------------------------------------------- */
 main {
-  flex: 1 0 auto;  /* grow to fill, never shrink below content height */
-}
-
-footer {
-  flex-shrink: 0;
+  min-height: calc(100vh - 8rem);
 }
 
 /* ---------------------------------------------------------------------------

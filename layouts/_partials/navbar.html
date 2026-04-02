@@ -19,7 +19,7 @@
 */}}
 
 <nav id="main-navbar"
-     class="navbar navbar-expand-lg bg-body-tertiary sticky-top"
+     class="navbar navbar-expand-lg bg-body-tertiary fixed-top"
      aria-label="Main navigation">
   <div class="container-md">
 
@@ -120,8 +120,31 @@
 
 <script>
   (function () {
+    // Dark mode icon correction
     var theme = document.documentElement.getAttribute('data-bs-theme');
     var icon  = document.getElementById('theme-toggle-icon');
     if (icon) icon.textContent = theme === 'dark' ? '☀' : '☾';
+
+    // Shrinking navbar on scroll
+    // We add .navbar-scrolled to both the navbar and body so CSS can
+    // transition padding on both simultaneously.
+    // Threshold: 80px — starts collapsing before the tall navbar fully
+    // clears the viewport, so the transition feels responsive.
+    var navbar    = document.getElementById('main-navbar');
+    var threshold = 80;
+
+    function onScroll() {
+      if (window.scrollY > threshold) {
+        navbar.classList.add('navbar-scrolled');
+        document.body.classList.add('navbar-scrolled');
+      } else {
+        navbar.classList.remove('navbar-scrolled');
+        document.body.classList.remove('navbar-scrolled');
+      }
+    }
+
+    // Run once on load in case the page is already scrolled (e.g. back button)
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   })();
 </script>
