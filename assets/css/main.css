@@ -84,6 +84,33 @@ main {
 }
 
 /* ---------------------------------------------------------------------------
+   Bio section portrait — circular headshot matching old Academic theme style.
+   The col is text-center so the img auto-centres as a block element.
+--------------------------------------------------------------------------- */
+.portrait {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
+/* Portrait title block */
+.portrait-title h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.portrait-title h3 {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--bs-secondary-color);
+  margin-bottom: 0.25rem;
+}
+
+/* ---------------------------------------------------------------------------
    Section heading column — matches the old Academic theme's .section-heading.
    Adds top padding so the heading aligns with the top of the first card,
    and makes it sticky so it stays visible as the user scrolls through cards.
