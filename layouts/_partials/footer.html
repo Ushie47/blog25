@@ -1,11 +1,14 @@
-{{ $oldest_date := (index .Site.RegularPages.ByDate 0).Date.Year }}
+{{ $oldest_date := (index (.Site.GetPage "section" "posts").Pages.ByDate 0).Date.Year }}
 {{ $newest_date := now.Year }}
 {{ $date_range := printf "%d–%d" $oldest_date $newest_date }}
+{{ if (eq $oldest_date $newest_date) }}
+    {{ $date_range = printf "%d" $newest_date }}
+{{ end }}
 
 <div class="container-md">
     <div class="row">
         <div class="col">
-            <p>Copyright {{ $date_range }}. All rights reserved.</p>
+            <p>Copyright {{ $date_range }}, {{.Site.Params.author_name }}. All rights reserved.</p>
         </div>
     </div>
 </div>
