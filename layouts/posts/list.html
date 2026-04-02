@@ -11,13 +11,15 @@
   Author fallback: if no authors in front matter, show site params.author_name.
 */}}
 
+{{ $paginator := .Paginate .Pages }}
+
 <div class="container py-4">
   <div class="row">
     <div class="col-lg-8">
 
       <h1 class="mb-4">{{ .Title }}</h1>
 
-      {{ range $i, $page := .Pages }}
+      {{ range $i, $page := $paginator.Pages }}
         {{ $authors := $page.Params.authors | default slice }}
         {{ $authorDisplay := "" }}
         {{ if gt (len $authors) 0 }}
