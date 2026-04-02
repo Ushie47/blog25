@@ -33,10 +33,10 @@
          class="d-flex align-items-center"
          style="min-height: 100vh; {{ $bgStyle | safeCSS }}">
   <div class="container-md py-5">
-    <div class="row align-items-center g-5">
+    <div class="row g-5">
 
       {{/* Left: heading + see-all link */}}
-      <div class="col-lg-4">
+      <div class="col-lg-4 section-heading">
         <h2 class="display-6 fw-bold mb-3">{{ $title }}</h2>
         {{ with $allURL }}
           <a href="{{ . | relURL }}" class="btn btn-outline-primary">

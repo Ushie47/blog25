@@ -84,6 +84,23 @@ main {
 }
 
 /* ---------------------------------------------------------------------------
+   Section heading column — matches the old Academic theme's .section-heading.
+   Adds top padding so the heading aligns with the top of the first card,
+   and makes it sticky so it stays visible as the user scrolls through cards.
+--------------------------------------------------------------------------- */
+.section-heading {
+  padding-top: 0.25rem;
+}
+
+@media (min-width: 992px) {
+  .section-heading {
+    position: sticky;
+    top: 4rem;   /* just below the collapsed navbar */
+    align-self: flex-start;  /* required for sticky inside a flex/grid row */
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Publication cards
    .pub-card is the base. The border-left colour is set via an inline style
    in the template (style="border-left-color: var(--pub-color-conference)")

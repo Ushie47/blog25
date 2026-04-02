@@ -14,10 +14,10 @@
          class="d-flex align-items-center"
          style="min-height: 100vh;">
   <div class="container-md py-5">
-    <div class="row align-items-center g-5">
+    <div class="row g-5">
 
       {{/* --- Left column: headshot, name, employer, social --- */}}
-      <div class="col-lg-4 text-center text-lg-start">
+      <div class="col-lg-4 text-center text-lg-start section-heading">
 
         {{/* Circular headshot */}}
         {{ with $home.Params.headshot }}
@@ -88,6 +88,7 @@
         {{/* Biography — from .Content (markdown below front matter) */}}
         {{ with $home.Content }}
           <div class="mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+            <h1 class="mb-4">Biography</h1>
             {{ . }}
           </div>
         {{ end }}
