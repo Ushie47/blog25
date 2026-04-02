@@ -1,0 +1,149 @@
+{{/*
+  home/hero_bio.html — the bio hero section.
+
+  Layout (large screens):
+    col-lg-4  — headshot, name, employer, social icons
+    col-lg-8  — bio (.Content), then two sub-columns: interests | education
+
+  The section id="bio" matches the navbar anchor href="#bio".
+*/}}
+
+{{ $home := . }}
+
+<section id="bio"
+         class="d-flex align-items-center"
+         style="min-height: 100vh;">
+  <div class="container-md py-5">
+    <div class="row align-items-center g-5">
+
+      {{/* --- Left column: headshot, name, employer, social --- */}}
+      <div class="col-lg-4 text-center text-lg-start">
+
+        {{/* Circular headshot */}}
+        {{ with $home.Params.headshot }}
+          {{ $imgURL := "" }}
+          {{ if or (hasPrefix . "http://") (hasPrefix . "https://") }}
+            {{ $imgURL = . }}
+          {{ else if hasPrefix . "/" }}
+            {{ $imgURL = . | relURL }}
+          {{ else }}
+            {{ with $home.Resources.GetMatch . }}
+              {{ $imgURL = .RelPermalink }}
+            {{ end }}
+          {{ end }}
+          {{ with $imgURL }}
+            <img src="{{ . }}"
+                 alt="{{ site.Params.author_name }}"
+                 class="rounded-circle mb-3 img-fluid"
+                 style="width: 180px; height: 180px; object-fit: cover;">
+          {{ end }}
+        {{ end }}
+
+        {{/* Name */}}
+        <h1 class="h3 mb-1">{{ site.Params.author_name }}</h1>
+
+        {{/* Title / role */}}
+        {{ with site.Params.author_title }}
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">{{ . }}</p>
+        {{ end }}
+
+        {{/* Employer with optional link */}}
+        {{ with $home.Params.employer }}
+          <p class="mb-3" style="font-size: 0.9rem;">
+            {{ with $home.Params.employer_url }}
+              <a href="{{ . }}" target="_blank" rel="noopener">
+                {{ $home.Params.employer }}
+              </a>
+            {{ else }}
+              {{ $home.Params.employer }}
+            {{ end }}
+          </p>
+        {{ end }}
+
+        {{/* Social icons */}}
+        {{ with $home.Params.social }}
+          <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-2">
+            {{ range . }}
+              {{ $rel := .rel | default "" }}
+              <a href="{{ .url }}"
+                 title="{{ .name }}"
+                 aria-label="{{ .name }}"
+                 {{ with $rel }}rel="{{ . }}"{{ end }}
+                 {{ if not (hasPrefix .url "mailto:") }}
+                   target="_blank"
+                 {{ end }}
+                 class="text-muted"
+                 style="font-size: 1.4rem; text-decoration: none;">
+                <i class="{{ .icon }}" aria-hidden="true"></i>
+              </a>
+            {{ end }}
+          </div>
+        {{ end }}
+
+      </div>
+
+      {{/* --- Right column: bio + interests/education --- */}}
+      <div class="col-lg-8">
+
+        {{/* Biography — from .Content (markdown below front matter) */}}
+        {{ with $home.Content }}
+          <div class="mb-4" style="font-size: 1.05rem; line-height: 1.7;">
+            {{ . }}
+          </div>
+        {{ end }}
+
+        {{/* Interests + Education — two sub-columns */}}
+        <div class="row g-4">
+
+          {{/* Interests */}}
+          {{ with $home.Params.interests }}
+            <div class="col-sm-6">
+              <h2 class="h6 text-uppercase text-muted mb-2"
+                  style="letter-spacing: 0.05em; font-size: 0.75rem;">
+                Interests
+              </h2>
+              <ul class="list-unstyled mb-0">
+                {{ range . }}
+                  <li class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-circle-dot"
+                       style="font-size: 0.5rem; color: var(--bs-primary);"
+                       aria-hidden="true"></i>
+                    {{ . }}
+                  </li>
+                {{ end }}
+              </ul>
+            </div>
+          {{ end }}
+
+          {{/* Education */}}
+          {{ with $home.Params.education }}
+            <div class="col-sm-6">
+              <h2 class="h6 text-uppercase text-muted mb-2"
+                  style="letter-spacing: 0.05em; font-size: 0.75rem;">
+                Education
+              </h2>
+              <ul class="list-unstyled mb-0">
+                {{ range . }}
+                  <li class="d-flex align-items-start gap-2 mb-2">
+                    <i class="fa-solid fa-graduation-cap mt-1"
+                       style="font-size: 0.9rem; color: var(--bs-primary); flex-shrink: 0;"
+                       aria-hidden="true"></i>
+                    <div>
+                      <div style="font-size: 0.875rem; font-weight: 500;">
+                        {{ .degree }}
+                      </div>
+                      <div class="text-muted" style="font-size: 0.8rem;">
+                        {{ .institution }}{{ with .year }}, {{ . }}{{ end }}
+                      </div>
+                    </div>
+                  </li>
+                {{ end }}
+              </ul>
+            </div>
+          {{ end }}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

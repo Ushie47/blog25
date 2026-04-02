@@ -1,0 +1,75 @@
+{{/*
+  home/hero_contact.html — contact hero section.
+
+  Shows email, address (linked to Google Maps), and social links with
+  both icons AND text labels (unlike the bio section which is icon-only).
+*/}}
+
+{{/* Accept either a plain page (from direct call) or a dict with home + alt_bg */}}
+{{ $home   := .home | default . }}
+{{ $altBg  := .alt_bg | default false }}
+{{ $bgStyle := "" }}
+{{ if $altBg }}{{ $bgStyle = "background-color: var(--bs-tertiary-bg);" }}{{ end }}
+
+<section id="contact"
+         class="d-flex align-items-center"
+         style="min-height: 100vh; {{ $bgStyle }}">
+  <div class="container-md py-5">
+    <div class="row align-items-center g-5">
+
+      <div class="col-lg-4">
+        <h2 class="display-6 fw-bold mb-3">Contact</h2>
+        <p class="text-muted">
+          Feel free to reach out.
+        </p>
+      </div>
+
+      <div class="col-lg-8">
+        <ul class="list-unstyled" style="font-size: 1rem; line-height: 2;">
+
+          {{/* Email */}}
+          {{ with site.Params.author_email }}
+            <li class="d-flex align-items-center gap-3">
+              <i class="fa-solid fa-envelope"
+                 style="width: 1.5rem; color: var(--bs-primary);"
+                 aria-hidden="true"></i>
+              <a href="mailto:{{ . }}">{{ . }}</a>
+            </li>
+          {{ end }}
+
+          {{/* Address → Google Maps */}}
+          {{ with $home.Params.address }}
+            <li class="d-flex align-items-center gap-3">
+              <i class="fa-solid fa-location-dot"
+                 style="width: 1.5rem; color: var(--bs-primary);"
+                 aria-hidden="true"></i>
+              {{ $mapsURL := printf "https://maps.google.com/?q=%s" ($home.Params.maps_query | default (. | urlize)) }}
+              <a href="{{ $mapsURL }}" target="_blank" rel="noopener">
+                {{ . }}
+              </a>
+            </li>
+          {{ end }}
+
+          {{/* Social links with text labels */}}
+          {{ range $home.Params.social }}
+            {{ $rel := .rel | default "" }}
+            <li class="d-flex align-items-center gap-3">
+              <i class="{{ .icon }}"
+                 style="width: 1.5rem; color: var(--bs-primary);"
+                 aria-hidden="true"></i>
+              <a href="{{ .url }}"
+                 {{ with $rel }}rel="{{ . }}"{{ end }}
+                 {{ if not (hasPrefix .url "mailto:") }}
+                   target="_blank" rel="noopener"
+                 {{ end }}>
+                {{ .name }}
+              </a>
+            </li>
+          {{ end }}
+
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>

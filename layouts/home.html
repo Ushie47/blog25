@@ -1,9 +1,132 @@
 {{ define "main" }}
-  {{ .Content }}
-  {{ range site.RegularPages }}
-    <section>
-      <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
-      {{ .Summary }}
-    </section>
+
+{{/*
+  home.html — assembles the homepage hero sections.
+
+  Each content section (experience, publications, etc.) renders its most
+  recent N items using the same card partials as the full list pages.
+  The count N comes from site.Params.home_*_count.
+
+  Card HTML is collected into a string variable by ranging pages and
+  concatenating partial outputs. Hugo partials return rendered HTML strings
+  when assigned: {{ $html = printf "%s%s" $html (partial "..." .) }}
+
+  Section order follows the main menu weight so the navbar anchors and
+  page sections stay in sync automatically.
+
+  Alternating backgrounds: odd sections get --bs-tertiary-bg, even sections
+  get the default background. Bio and Contact have fixed backgrounds.
+  We track parity with a $sectionIndex counter.
+*/}}
+
+{{/* Collect the home page data */}}
+{{ $home := . }}
+
+{{/* --- Bio --- */}}
+{{ partial "home/hero_bio.html" $home }}
+
+{{/* -------------------------------------------------------------------
+  Content sections — iterated in menu weight order.
+  We match menu entry names to section types to know which card partial
+  and count param to use.
+------------------------------------------------------------------- */}}
+{{ $sectionIndex := 1 }}
+
+{{ range site.Menus.main }}
+  {{ $menuName := .Name | lower }}
+  {{ $altBg    := eq (mod $sectionIndex 2) 1 }}
+  {{ $cards    := "" }}
+  {{ $allURL   := .URL }}
+  {{ $allLabel := printf "All %s" (.Name | lower) }}
+  {{ $show     := true }}
+
+  {{ if eq $menuName "experience" }}
+    {{ $count   := site.Params.home_experience_count | default 4 }}
+    {{ $section := site.GetPage "/experience" }}
+    {{ if $section }}
+      {{/* Same sort logic as experience/list.html — current first */}}
+      {{ $entries := slice }}
+      {{ range $section.Pages }}
+        {{ $endRaw    := .Params.end_date | default "" }}
+        {{ $isCurrent := or (eq $endRaw "") (eq $endRaw "present") }}
+        {{ $sortEnd   := time.Now }}
+        {{ if not $isCurrent }}
+          {{ $padded := $endRaw }}
+          {{ if eq (len (findRE "-" $endRaw)) 0 }}{{ $padded = printf "%s-01-01" $endRaw }}
+          {{ else if eq (len (findRE "-" $endRaw)) 1 }}{{ $padded = printf "%s-01" $endRaw }}
+          {{ end }}
+          {{ $sortEnd = time $padded }}
+        {{ end }}
+        {{ $entries = $entries | append (dict "page" . "sort_end" $sortEnd) }}
+      {{ end }}
+      {{ $entries = sort $entries "page.Date" "desc" }}
+      {{ $entries = sort $entries "sort_end" "desc" }}
+      {{ range first $count $entries }}
+        {{ $cards = printf "%s%s" $cards (partial "experience/experience_card.html" .page) }}
+      {{ end }}
+    {{ end }}
+
+  {{ else if eq $menuName "publications" }}
+    {{ $count   := site.Params.home_publications_count | default 3 }}
+    {{ $section := site.GetPage "/publications" }}
+    {{ if $section }}
+      {{ range first $count $section.Pages }}
+        {{ $cards = printf "%s%s" $cards (partial "publications/pub_card.html" .) }}
+      {{ end }}
+    {{ end }}
+
+  {{ else if eq $menuName "patents" }}
+    {{ $count   := site.Params.home_patents_count | default 3 }}
+    {{ $section := site.GetPage "/patents" }}
+    {{ if $section }}
+      {{ range first $count $section.Pages }}
+        {{ $cards = printf "%s%s" $cards (partial "patents/patent_card.html" .) }}
+      {{ end }}
+    {{ end }}
+
+  {{ else if eq $menuName "projects" }}
+    {{ $count   := site.Params.home_projects_count | default 3 }}
+    {{ $section := site.GetPage "/projects" }}
+    {{ if $section }}
+      {{ range first $count $section.Pages }}
+        {{ $cards = printf "%s%s" $cards (partial "projects/project_card.html" .) }}
+      {{ end }}
+    {{ end }}
+
+  {{ else if eq $menuName "posts" }}
+    {{ $count   := site.Params.home_posts_count | default 4 }}
+    {{ $section := site.GetPage "/posts" }}
+    {{ if $section }}
+      {{ range first $count $section.Pages }}
+        {{ $cards = printf "%s%s" $cards (partial "posts/post_summary.html" .) }}
+      {{ end }}
+    {{ end }}
+
+  {{ else }}
+    {{/* Unknown menu entry — skip */}}
+    {{ $show = false }}
   {{ end }}
+
+  {{ if $show }}
+    {{ partial "home/hero_section.html" (dict
+        "id"        $menuName
+        "title"     .Name
+        "all_url"   $allURL
+        "all_label" $allLabel
+        "cards"     $cards
+        "alt_bg"    $altBg
+    ) }}
+    {{ $sectionIndex = add $sectionIndex 1 }}
+  {{ end }}
+
+{{ end }}
+
+{{/* --- Contact --- */}}
+{{/* Contact alternates with the last content section */}}
+{{ $contactAltBg := eq (mod $sectionIndex 2) 1 }}
+{{ partial "home/hero_contact.html" (dict "home" $home "alt_bg" $contactAltBg) }}
+
+{{/* Shared BibTeX modal — needed if publication/patent cards appear */}}
+{{ partial "bibtex_modal.html" . }}
+
 {{ end }}

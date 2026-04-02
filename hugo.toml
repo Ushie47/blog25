@@ -80,6 +80,7 @@ summaryLength = 100
   home_publications_count = 3
   home_patents_count      = 3
   home_posts_count        = 4
+  home_projects_count     = 3
   home_experience_count   = 4
 
   # --- Integrations (leave blank to disable) ---

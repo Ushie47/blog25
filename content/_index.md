@@ -1,9 +1,43 @@
 +++
-title = 'Home'
-date = 2023-01-01T08:00:00-07:00
-draft = false
+headshot     = "headshot.jpg"
+employer     = "Acme Corp"
+employer_url = "https://acme.com"
+
+interests = [
+  "Machine Learning",
+  "Distributed Systems",
+]
+
+[[education]]
+  degree      = "PhD Computer Science"
+  institution = "MIT"
+  year        = "2018"
+
+[[social]]
+  name = "Email"
+  url  = "mailto:alice@example.com"
+  icon = "fa-solid fa-envelope"
+
+[[social]]
+  name = "Google Scholar"
+  url  = "https://scholar.google.com/citations?user=XXXXX"
+  icon = "ai ai-google-scholar"   # academicons
+
+[[social]]
+  name = "Mendeley"
+  url  = "https://mendeley.com/profiles/alice"
+  icon = "ai ai-mendeley"         # academicons
+
+[[social]]
+  name    = "Mastodon"
+  url     = "https://mastodon.social/@alice"
+  icon    = "fa-brands fa-mastodon"
+  rel     = "me"
+
+address    = "123 Main St, Seattle, WA 98101"
+maps_query = "123+Main+St+Seattle+WA+98101"
 +++
 
-Laborum voluptate pariatur ex culpa magna nostrud est incididunt fugiat
-pariatur do dolor ipsum enim. Consequat tempor do dolor eu. Non id id anim anim
-excepteur excepteur pariatur nostrud qui irure ullamco.
+I am a researcher working on...
+
+Second paragraph fine here.
