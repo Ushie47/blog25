@@ -17,8 +17,8 @@
 
       <h1 class="mb-4">{{ .Title }}</h1>
 
-      {{ range .Pages }}
-        {{ $authors := .Params.authors | default slice }}
+      {{ range $i, $page := .Pages }}
+        {{ $authors := $page.Params.authors | default slice }}
         {{ $authorDisplay := "" }}
         {{ if gt (len $authors) 0 }}
           {{ $authorDisplay = delimit $authors ", " " and " }}
@@ -29,18 +29,18 @@
         <article class="mb-5">
           <div class="d-flex align-items-baseline gap-2 mb-1">
             <time class="text-muted" style="font-size: 0.85rem;"
-                  datetime="{{ .Date.Format "2006-01-02" }}">
-              {{ .Date.Format "January 2, 2006" }}
+                  datetime="{{ $page.Date.Format "2006-01-02" }}">
+              {{ $page.Date.Format "January 2, 2006" }}
             </time>
             <span class="text-muted" style="font-size: 0.85rem;">·</span>
             <span class="text-muted" style="font-size: 0.85rem;">
-              {{ .ReadingTime }} min read
+              {{ $page.ReadingTime }} min read
             </span>
           </div>
 
           <h2 class="h4 mb-1">
-            <a href="{{ .RelPermalink }}" class="text-decoration-none">
-              {{ .Title }}
+            <a href="{{ $page.RelPermalink }}" class="text-decoration-none">
+              {{ $page.Title }}
             </a>
           </h2>
 
@@ -53,7 +53,7 @@
           </p>
 
           {{/* Tags */}}
-          {{ with .Params.tags }}
+          {{ with $page.Params.tags }}
             <div class="d-flex flex-wrap gap-1 mt-2">
               {{ range . }}
                 {{ $termPage := site.GetPage (printf "/tags/%s" (. | urlize)) }}
@@ -69,7 +69,7 @@
           {{ end }}
         </article>
 
-        {{/* {{ if not .IsLast }}<hr class="mb-5">{{ end }} */}}
+        {{ if lt $i (sub (len $.Pages) 1) }}<hr class="mb-5">{{ end }}
       {{ end }}
 
       {{ template "_internal/pagination.html" . }}
