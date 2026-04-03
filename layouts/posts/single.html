@@ -155,6 +155,9 @@
   </div>
 </div>
 
+{{/* --- JSON-LD: BlogPosting --- */}}
+{{ partial "posts/jsonld.html" (dict "page" $ "root" $) }}
+
 {{ end }}
 
 {{ define "scripts" }}

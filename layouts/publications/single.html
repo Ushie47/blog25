@@ -114,4 +114,6 @@
 {{/* BibTeX modal — must be outside the container for correct Bootstrap positioning */}}
 {{ partial "bibtex_modal.html" . }}
 
+{{ partial "publications/jsonld.html" (dict "page" $ "root" $) }}
+
 {{ end }}

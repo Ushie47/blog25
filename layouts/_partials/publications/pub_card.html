@@ -111,17 +111,4 @@
 </div>
 
 {{/* --- JSON-LD: ScholarlyArticle --- */}}
-{{ $authors_udata := partial "jsonld_authors.html" $page }}
-{{ $schema := dict
-  "@context"      "https://schema.org"
-  "@type"         "ScholarlyArticle"
-  "headline"      $page.Title
-  "url"           $page.Permalink
-  "datePublished" ($page.Date.Format "2006-01-02")
-  "description"   ($page.Params.abstract | default "")
-  "author"        $authors_udata
-}}
-{{ if $page.Params.doi }}
-  {{ $schema = merge $schema (dict "sameAs" (printf "https://doi.org/%s" $page.Params.doi)) }}
-{{ end }}
-{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}
+{{ partial "publications/jsonld.html" (dict "page" $page "root" $root) }}

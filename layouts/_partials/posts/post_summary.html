@@ -56,13 +56,4 @@
 </article>
 
 {{/* --- JSON-LD: BlogPosting --- */}}
-{{ $authors_udata := partial "jsonld_authors.html" $page }}
-{{ $schema := dict
-  "@context"      "https://schema.org"
-  "@type"         "BlogPosting"
-  "headline"      $page.Title
-  "url"           $page.Permalink
-  "datePublished" ($page.Date.Format "2006-01-02")
-  "author"        $authors_udata
-}}
-{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}
+{{ partial "posts/jsonld.html" (dict "page" $page "root" $root) }}

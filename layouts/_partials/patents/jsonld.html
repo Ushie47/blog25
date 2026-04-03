@@ -1,0 +1,30 @@
+{{/*
+  patents/jsonld.html – JSON-LD for a patent
+
+  Call with a dictionary of page, root keys
+*/}}
+
+{{ $page := .page }}
+{{ $root := .root }}
+
+{{ $authors_udata := partial "jsonld_authors.html" $page }}
+{{ $numbers := slice }}
+{{ range ($page.Params.identifiers | default slice) }}
+  {{ with .number }}{{ $numbers = $numbers | append . }}{{ end }}
+{{ end }}
+{{ $schema := dict
+  "@context"      "https://schema.org"
+  "@type"         "CreativeWork"
+  "name"          $page.Title
+  "url"           $page.Permalink
+  "datePublished" ($page.Date.Format "2006-01-02")
+  "description"   ($page.Params.abstract | default "")
+  "author"        $authors_udata
+}}
+{{ with $page.Params.assignee }}
+  {{ $schema = merge $schema (dict "copyrightHolder" (dict "@type" "Organization" "name" .)) }}
+{{ end }}
+{{ with $numbers }}
+  {{ $schema = merge $schema (dict "identifier" (index . 0)) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

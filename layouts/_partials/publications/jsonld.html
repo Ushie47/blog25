@@ -1,0 +1,23 @@
+{{/*
+  publications/jsonld.html – JSON-LD for a scholarly article
+
+  Call with a dictionary of page, root keys
+*/}}
+
+{{ $page := .page }}
+{{ $root := .root }}
+
+{{ $authors_udata := partial "jsonld_authors.html" $page }}
+{{ $schema := dict
+  "@context"      "https://schema.org"
+  "@type"         "ScholarlyArticle"
+  "headline"      $page.Title
+  "url"           $page.Permalink
+  "datePublished" ($page.Date.Format "2006-01-02")
+  "description"   ($page.Params.abstract | default "")
+  "author"        $authors_udata
+}}
+{{ if $page.Params.doi }}
+  {{ $schema = merge $schema (dict "sameAs" (printf "https://doi.org/%s" $page.Params.doi)) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

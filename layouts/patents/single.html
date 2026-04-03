@@ -67,4 +67,10 @@
   </div>
 </div>
 
+{{/* --- BibTeX modal (hidden until triggered by the BibTeX button) --- */}}
+{{ partial "bibtex_modal.html" $ }}
+
+{{/* --- JSON-LD: Patent as CreativeWork --- */}}
+{{ partial "patents/jsonld.html" (dict "page" $ "root" $) }}
+
 {{ end }}

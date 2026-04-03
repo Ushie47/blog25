@@ -1,0 +1,25 @@
+{{/*
+  projects/jsonld.html – JSON-LD for a project as creative work or software source code
+
+  Call with a dictionary of page, root keys
+*/}}
+
+{{ $page := .page }}
+{{ $root := .root }}
+
+{{ $type := "CreativeWork" }}
+{{ with $page.Params.github }}{{ $type = "SoftwareSourceCode" }}{{ end }}
+{{ $authors_udata := partial "jsonld_authors.html" $page }}
+{{ $schema := dict
+  "@context"   "https://schema.org"
+  "@type"      $type
+  "name"       $page.Title
+  "url"        $page.Permalink
+  "description" ($page.Params.abstract | default "")
+  "dateCreated" ($page.Date.Format "2006-01-02")
+  "author"     $authors_udata
+}}
+{{ with $page.Params.github }}
+  {{ $schema = merge $schema (dict "codeRepository" .) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

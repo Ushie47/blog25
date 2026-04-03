@@ -1,0 +1,19 @@
+{{/*
+  posts/jsonld.html – JSON-LD for a blog post
+
+  Call with a dictionary of page, root keys
+*/}}
+
+{{ $page := .page }}
+{{ $root := .root }}
+
+{{ $authors_udata := partial "jsonld_authors.html" $page }}
+{{ $schema := dict
+  "@context"      "https://schema.org"
+  "@type"         "BlogPosting"
+  "headline"      $page.Title
+  "url"           $page.Permalink
+  "datePublished" ($page.Date.Format "2006-01-02")
+  "author"        $authors_udata
+}}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}
