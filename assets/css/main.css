@@ -231,3 +231,25 @@ blockquote {
   padding-left: 1rem;
   border-left: 3px solid var(--bs-border-color);
 }
+
+/* ---------------------------------------------------------------------------
+   Cookie consent banner and revoke button — fix positioning relative to
+   navbar
+--------------------------------------------------------------------------- */
+.cc-window.cc-banner {
+  bottom: 0 !important;
+  top: auto !important;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+/* Revoke button — bottom right, clear of content */
+.cc-revoke {
+  bottom: 0 !important;
+  top: auto !important;
+  right: 1rem;
+  left: auto !important;
+  border-radius: 4px 4px 0 0;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  z-index: 9999;
+}

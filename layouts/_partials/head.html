@@ -200,3 +200,29 @@
     document.documentElement.setAttribute('data-bs-theme', theme);
   })();
 </script>
+
+{{/* -----------------------------------------------------------------------
+  Google Analytics — consent mode initialisation.
+  Must be in <head> before any gtag calls per Google's consent mode docs.
+  We initialise with consent denied; the cookie_consent partial in <body>
+  upgrades to granted after user accepts.
+  Only rendered if google_analytics param is set.
+----------------------------------------------------------------------- */}}
+{{ with site.Params.google_analytics }}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+
+  // Set default consent to denied before any measurement
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied'
+  });
+
+  gtag('js', new Date());
+  gtag('config', '{{ . }}');
+</script>
+{{ end }}

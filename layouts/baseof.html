@@ -36,6 +36,10 @@
           integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
           crossorigin="anonymous"></script>
 
+  {{ if .Site.Params.cookie_consent }}
+    {{ partial "cookie_consent.html" . }}
+  {{ end }}
+
   {{/* Per-page extra scripts — layouts can inject additional JS here */}}
   {{ block "scripts" . }}{{ end }}
 </body>

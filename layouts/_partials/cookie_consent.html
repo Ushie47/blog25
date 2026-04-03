@@ -1,0 +1,149 @@
+{{/* cookie_consent.html
+     Rendered at bottom of <body>, after Bootstrap JS.
+     Handles: banner, cookie policy modal, consent callbacks for GA + Disqus.
+*/}}
+
+{{ $hasGA     := and site.Params.google_analytics (ne site.Params.google_analytics "") }}
+{{ $hasDisqus := and site.Params.disqus_shortname (ne site.Params.disqus_shortname "") }}
+
+{{ if or $hasGA $hasDisqus }}
+
+{{ $msg := "This website uses cookies." }}
+{{ if and $hasGA $hasDisqus }}
+  {{ $msg = "This website uses cookies for analytics (Google Analytics) and comments (Disqus)." }}
+{{ else if $hasGA }}
+  {{ $msg = "This website uses cookies for analytics (Google Analytics)." }}
+{{ else if $hasDisqus }}
+  {{ $msg = "This website uses cookies to enable comments (Disqus)." }}
+{{ end }}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.css"
+      integrity="sha512-LQ97camar/lOliT/MqjcQs5kWgy6Qz/cCRzzRzUCfv0fotsCTC9ZHXaPQmJV8Xu/PVALfJZ7BDezl5lW3/qBxg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent/3.1.1/cookieconsent.min.js"
+        integrity="sha512-yXXqOFjdjHNH1GND+1EO0jbvvebABpzGKD66djnUfiKlYME5HGMUJHoCaeE4D5PTG2YsSJf6dwqyUUvQvS0vaA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
+<script>
+window.addEventListener('load', function() {
+  var isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+  window.cookieconsent.initialise({
+    palette: {
+      popup: {
+        background: isDark ? "#1e1e2e" : "#ffffff",
+        text:       isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+        border:     "1px solid " + (isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.15)")
+      },
+      button: {
+        background: "#2962ff",
+        text: "#ffffff"
+      }
+    },
+    theme: "classic",
+    revokable: true,
+    law: { regionalLaw: false },
+    location: false,
+    content: {
+      message: {{ $msg | jsonify }},
+      dismiss: "Got it!",
+      link:    "Learn more",
+      href:    "#"
+    },
+    onInitialise: function(status) {
+      // Wire "Learn more" to Bootstrap cookie policy modal
+      _fixLearnMoreLink();
+      // If already consented on a return visit, fire immediately
+      if (this.hasConsented()) { _onConsent(); }
+    },
+    onPopupOpen: function() {
+      _fixLearnMoreLink();
+    },
+    onStatusChange: function(status) {
+      if (this.hasConsented()) { _onConsent(); }
+    }
+  });
+
+  function _fixLearnMoreLink() {
+    var link = document.querySelector('.cc-link');
+    if (link) {
+      link.setAttribute('data-bs-toggle', 'modal');
+      link.setAttribute('data-bs-target', '#cookie-policy-modal');
+      link.href = '#';
+      link.onclick = function(e) { e.preventDefault(); };
+    }
+  }
+
+  function _onConsent() {
+    {{ if $hasGA }}      _loadAnalytics(); {{ end }}
+    {{ if $hasDisqus }}  _loadDisqus();    {{ end }}
+  }
+
+  {{ if $hasGA }}
+  function _loadAnalytics() {
+    if (window._gaLoaded) return;
+    window._gaLoaded = true;
+    // Upgrade consent — GA was initialised in <head> with consent denied
+    gtag('consent', 'update', { 'analytics_storage': 'granted' });
+  }
+  {{ end }}
+
+  {{ if $hasDisqus }}
+  function _loadDisqus() {
+    if (window._disqusLoaded) return;
+    window._disqusLoaded = true;
+    var container = document.getElementById('disqus_thread');
+    if (!container) return;
+    window.disqus_config = function() {
+      this.page.url        = container.dataset.pageUrl;
+      this.page.identifier = container.dataset.pageId;
+    };
+    var s = document.createElement('script');
+    s.src = 'https://{{ site.Params.disqus_shortname }}.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', +new Date());
+    document.body.appendChild(s);
+  }
+  {{ end }}
+});
+</script>
+
+{{/* Cookie policy modal */}}
+<div class="modal fade" id="cookie-policy-modal" tabindex="-1"
+     aria-labelledby="cookie-policy-label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cookie-policy-label">Cookie Policy</h5>
+        <button type="button" class="btn-close"
+                data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="font-size: 0.9rem; line-height: 1.6;">
+        <p>This site uses cookies strictly for the following purposes.
+           No cookies are set until you click <em>Got it!</em>.</p>
+        <ul>
+          {{ if $hasGA }}
+          <li><strong>Google Analytics</strong> — anonymous usage statistics.
+              No personally identifiable information is collected.
+              Opt out: <a href="https://tools.google.com/dlpage/gaoptout"
+                          target="_blank" rel="noopener">
+                tools.google.com/dlpage/gaoptout</a>.</li>
+          {{ end }}
+          {{ if $hasDisqus }}
+          <li><strong>Disqus</strong> — comment threads. Disqus sets its own
+              cookies when you interact with comments. See
+              <a href="https://help.disqus.com/en/articles/1717155-use-of-cookies"
+                 target="_blank" rel="noopener">Disqus's cookie policy</a>.</li>
+          {{ end }}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm"
+                data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ end }}

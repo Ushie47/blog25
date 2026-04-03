@@ -135,11 +135,11 @@
         </section>
       {{ end }}
 
-      {{/* Disqus placeholder — will be wired up with cookie consent later */}}
       {{ if site.Params.disqus_shortname }}
         <hr class="my-4">
-        <div id="disqus-container">
-          {{ partial "disqus.html" . }}
+        <div id="disqus_thread"
+             data-page-url="{{ .Permalink }}"
+             data-page-id="{{ .RelPermalink }}">
         </div>
       {{ end }}
 
