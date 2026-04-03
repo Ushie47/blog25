@@ -96,14 +96,7 @@
 {{/* --- JSON-LD: SoftwareSourceCode or CreativeWork --- */}}
 {{ $type := "CreativeWork" }}
 {{ with $page.Params.github }}{{ $type = "SoftwareSourceCode" }}{{ end }}
-{{ $authors := $page.Params.authors | default slice }}
-{{ if eq (len $authors) 0 }}
-  {{ $authors = slice site.Params.author_name }}
-{{ end }}
-{{ $authors_udata := slice }}
-{{ range $authors | default slice }}
-  {{ $authors_udata = $authors_udata | append (dict "@type" "Person" "name" .) }}
-{{ end }}
+{{ $authors_udata := partial "jsonld_authors.html" $page }}
 {{ $schema := dict
   "@context"   "https://schema.org"
   "@type"      $type

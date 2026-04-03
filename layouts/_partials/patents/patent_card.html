@@ -78,14 +78,7 @@
 {{ partial "bibtex_modal.html" $page }}
 
 {{/* --- JSON-LD: Patent as CreativeWork --- */}}
-{{ $authors := $page.Params.authors | default slice }}
-{{ if eq (len $authors) 0 }}
-  {{ $authors = slice site.Params.author_name }}
-{{ end }}
-{{ $authors_udata := slice }}
-{{ range $authors | default slice }}
-  {{ $authors_udata = $authors_udata | append (dict "@type" "Person" "name" .) }}
-{{ end }}
+{{ $authors_udata := partial "jsonld_authors.html" $page }}
 {{ $numbers := slice }}
 {{ range ($page.Params.identifiers | default slice) }}
   {{ with .number }}{{ $numbers = $numbers | append . }}{{ end }}

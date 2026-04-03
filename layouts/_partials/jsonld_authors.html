@@ -1,0 +1,19 @@
+{{/*
+  jsonld_authors.html — returns a slice of {"@type": "Person", "name": ...} dicts
+  for use in JSON-LD schemas.
+
+  Usage:
+    {{ $authors_udata := partial "jsonld_authors.html" . }}
+    (pass the publication/patent/post/project page as context)
+
+  Falls back to site.Params.author_name if no authors in front matter.
+*/}}
+{{ $authors := .Params.authors | default slice }}
+{{ if eq (len $authors) 0 }}
+  {{ $authors = slice site.Params.author_name }}
+{{ end }}
+{{ $result := slice }}
+{{ range $authors }}
+  {{ $result = $result | append (dict "@type" "Person" "name" .) }}
+{{ end }}
+{{ return $result }}
