@@ -23,6 +23,9 @@
 
 {{ $authors    := .page.Params.authors | default slice }}
 {{ $selfName   := site.Params.author_name }}
+{{ if eq (len $authors) 0 }}
+{{ $authors = slice site.Params.author_name }}
+{{ end }}
 {{ $maxAuthors := -1 }}
 {{ with .max_authors }}
   {{ $maxAuthors = . }}
