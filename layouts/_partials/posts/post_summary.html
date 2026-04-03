@@ -6,7 +6,7 @@
 {{ $root := .root | default . }}
 {{ $page := .page | default . }}
 
-{{ $authors := .Params.authors | default slice }}
+{{ $authors := $page.Params.authors | default slice }}
 {{ $authorDisplay := "" }}
 {{ if gt (len $authors) 0 }}
   {{ $authorDisplay = delimit $authors ", " " and " }}
@@ -18,22 +18,22 @@
   <div class="d-flex align-items-baseline gap-2 mb-1">
     <time class="text-muted" style="font-size: 0.8rem;"
           datetime="{{ .Date.Format "2006-01-02" }}">
-      {{ .Date.Format "Jan 2, 2006" }}
+      {{ $page.Date.Format "Jan 2, 2006" }}
     </time>
     <span class="text-muted" style="font-size: 0.8rem;">
-      · {{ .ReadingTime }} min read
+      · {{ $page.ReadingTime }} min read
     </span>
   </div>
   <h3 class="h6 mb-1">
-    <a href="{{ .RelPermalink }}" class="text-decoration-none">{{ .Title }}</a>
+    <a href="{{ .RelPermalink }}" class="text-decoration-none">{{ $page.Title }}</a>
   </h3>
   <p class="text-muted mb-0" style="font-size: 0.875rem;">
-    {{ .Content | plainify | truncate 200 }}
+    {{ $page.Content | plainify | truncate 200 }}
   </p>
 </article>
 
 {{/* --- JSON-LD: BlogPosting --- */}}
-{{ $authors := .Params.authors | default slice }}
+{{ $authors := $page.Params.authors | default slice }}
 {{ if eq (len $authors) 0 }}
   {{ $authors = slice site.Params.author_name }}
 {{ end }}
