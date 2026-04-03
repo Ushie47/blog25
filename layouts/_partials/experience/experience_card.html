@@ -117,12 +117,9 @@
   "@context"   "https://schema.org"
   "@type"      "OrganizationRole"
   "roleName"   $page.Title
-  "startDate"  ($page.Date.Format "2006-01-02")
+  "startDate"  $startDate
   "namedPosition" $page.Title
 }}
-{{ with $page.Params.organization }}
-  {{ $schema = merge $schema (dict "worksFor" (dict "@type" "Organization" "name" .)) }}
-{{ end }}
 {{ if not $isCurrent }}
   {{ $schema = merge $schema (dict "endDate" $endDisplay) }}
 {{ end }}
