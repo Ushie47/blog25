@@ -14,6 +14,6 @@
     {{ $vals = $vals | append $v }}
   {{ end }}
   <script type="application/ld+json">
-  [{{ delimit $vals "," }}]
+  [{{ delimit $vals "," | safe.JS }}]
   </script>
 {{ end }}
