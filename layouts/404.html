@@ -1,0 +1,88 @@
+{{ define "main" }}
+<div class="container py-5 text-center">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <h1 class="display-1 fw-bold text-muted">404</h1>
+      <h2 class="mb-3">Page not found</h2>
+      <p class="text-muted mb-4">
+        The page you're looking for doesn't exist or has moved.
+        {{ if site.Params.author_name }}
+          If you followed a link from an old version of
+          {{ site.Params.author_name }}'s site, it may have moved —
+          try searching below.
+        {{ end }}
+      </p>
+
+      {{/* Inline search on 404 page — same Fuse.js approach */}}
+      <div class="mb-3">
+        <input type="search"
+               id="search-input"
+               class="form-control form-control-lg text-center"
+               placeholder="Search for what you were looking for…"
+               autofocus>
+      </div>
+      <div id="search-results" class="text-start"></div>
+
+      <hr class="my-4">
+      <a href="{{ "/" | relURL }}" class="btn btn-primary">
+        ← Back to homepage
+      </a>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.2.0/dist/fuse.min.js"></script>
+<script>
+(function() {
+  var input   = document.getElementById('search-input');
+  var results = document.getElementById('search-results');
+
+  // Try to guess what the user was looking for from the URL path
+  var pathParts = window.location.pathname.replace(/\//g, ' ').trim();
+  var guess     = pathParts.replace(/-/g, ' ');
+  if (guess) input.value = guess;
+
+  fetch('{{ "/" | relURL }}index.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var fuse = new Fuse(data, {
+        keys: [
+          { name: 'title',   weight: 2.0 },
+          { name: 'tags',    weight: 1.5 },
+          { name: 'summary', weight: 1.0 },
+          { name: 'content', weight: 0.5 },
+        ],
+        includeScore:   true,
+        ignoreLocation: true,
+        threshold:      0.3,
+        minMatchCharLength: 2,
+      });
+
+      function doSearch(q) {
+        if (!q.trim()) { results.innerHTML = ''; return; }
+        var hits = fuse.search(q).slice(0, 5);
+        if (hits.length === 0) {
+          results.innerHTML = '<p class="text-muted">No results found.</p>';
+          return;
+        }
+        results.innerHTML = '<p class="text-muted mb-3">Did you mean:</p>'
+          + hits.map(function(hit) {
+            var p = hit.item;
+            return '<div class="mb-2">'
+              + '<a href="' + p.url + '">' + p.title + '</a>'
+              + (p.section ? ' <span class="badge text-bg-light">' + p.section + '</span>' : '')
+              + '</div>';
+          }).join('');
+      }
+
+      if (guess) doSearch(guess);
+      input.addEventListener('input', function() { doSearch(this.value); });
+    })
+    .catch(function() {
+      results.innerHTML = '';
+    });
+})();
+</script>
+{{ end }}

@@ -72,19 +72,16 @@
         {{ end }}
       </ul>
 
-      {{/* DuckDuckGo search */}}
       <form class="d-flex me-2"
             role="search"
-            action="https://duckduckgo.com/"
-            method="get"
-            target="_blank">
-        <input type="hidden" name="sites" value="{{ site.BaseURL | urlize }}">
+            action="{{ "/search/" | relURL }}"
+            method="get">
         <input class="form-control form-control-sm me-1"
-               type="search"
-               name="q"
-               placeholder="Search…"
-               aria-label="Search this site"
-               style="width: 10rem;">
+              type="search"
+              name="q"
+              placeholder="Search…"
+              aria-label="Search this site"
+              style="width: 10rem;" />
         <button class="btn btn-outline-secondary btn-sm" type="submit">
           Search
         </button>

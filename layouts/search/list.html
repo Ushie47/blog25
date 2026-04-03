@@ -1,0 +1,91 @@
+{{ define "main" }}
+<div class="container py-4">
+  <div class="row">
+    <div class="col-lg-8">
+      <h1 class="mb-4">Search</h1>
+      <div class="mb-3">
+        <input type="search"
+               id="search-input"
+               class="form-control"
+               placeholder="Search…"
+               autofocus>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.min.js"></script>
+<script>
+(function() {
+  var input   = document.getElementById('search-input');
+  var results = document.getElementById('search-results');
+
+  // Pre-fill from URL query param ?q=...
+  var params = new URLSearchParams(window.location.search);
+  var query  = params.get('q') || '';
+  if (query) input.value = query;
+
+  // Load the JSON index Hugo generated at /index.json
+  fetch('{{ "/" | relURL }}index.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var fuse = new Fuse(data, {
+        keys: [
+          { name: 'title',   weight: 2.0 },
+          { name: 'tags',    weight: 1.5 },
+          { name: 'summary', weight: 1.0 },
+          { name: 'content', weight: 0.5 },
+        ],
+        includeScore:    true,
+        ignoreLocation:  true,
+        threshold:       0.3,
+        minMatchCharLength: 2,
+      });
+
+      function doSearch(q) {
+        // Update URL without reloading
+        var url = new URL(window.location);
+        url.searchParams.set('q', q);
+        window.history.replaceState({}, '', url);
+
+        if (!q.trim()) {
+          results.innerHTML = '';
+          return;
+        }
+
+        var hits = fuse.search(q).slice(0, 20);
+
+        if (hits.length === 0) {
+          results.innerHTML = '<p class="text-muted">No results found for <em>'
+            + q.replace(/</g, '&lt;') + '</em>.</p>';
+          return;
+        }
+
+        results.innerHTML = hits.map(function(hit) {
+          var p = hit.item;
+          return '<article class="mb-4">'
+            + '<h2 class="h5 mb-1"><a href="' + p.url + '">' + p.title + '</a></h2>'
+            + (p.section ? '<span class="badge text-bg-light me-2">' + p.section + '</span>' : '')
+            + '<p class="text-muted mb-0" style="font-size:0.875rem;">' + p.summary + '</p>'
+            + '</article>';
+        }).join('<hr class="my-3">');
+      }
+
+      // Search immediately if query in URL
+      if (query) doSearch(query);
+
+      // Search as user types
+      input.addEventListener('input', function() {
+        doSearch(this.value);
+      });
+    })
+    .catch(function(err) {
+      results.innerHTML = '<p class="text-muted">Search unavailable.</p>';
+      console.error('Search index load failed:', err);
+    });
+})();
+</script>
+{{ end }}
