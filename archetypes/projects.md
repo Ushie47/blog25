@@ -8,8 +8,6 @@ draft          = true
 # Unlike `date`, Hugo does not parse this automatically, so "present" is safe.
 end_date = 'present'
 
-status = 'active'    # active | completed | archived
-
 # Authors — leave blank to default to site params.author_name.
 # For collaborations: authors = ["Alice Smith", "Bob Jones"]
 authors = []
