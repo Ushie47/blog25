@@ -40,7 +40,7 @@
     <div class="col-lg-9">
       {{ if eq .Data.Singular "publication_type" }}
         {{ range .Pages }}
-          {{ partial "publications/pub_card.html" . }}
+          {{ partial "publications/pub_card.html" (dict "page" . "root" $) }}
         {{ end }}
       {{ else }}
         <ul class="list-unstyled">

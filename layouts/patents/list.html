@@ -59,7 +59,7 @@
       {{ range .Pages }}
         <div class="patent-item"
              data-status="{{ .Params.status | default "granted" }}">
-          {{ partial "patents/patent_card.html" . }}
+          {{ partial "patents/patent_card.html" (dict "page" . "root" $) }}
         </div>
       {{ end }}
       <p id="patent-empty" class="text-muted" style="display:none;">

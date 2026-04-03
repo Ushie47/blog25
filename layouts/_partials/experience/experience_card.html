@@ -8,7 +8,8 @@
   or page bundle resource.
 */}}
 
-{{ $page := . }}
+{{ $root := .root | default . }}
+{{ $page := .page | default . }}
 
 {{/* --- Resolve end date for display --- */}}
 {{ $endRaw    := $page.Params.end_date | default "" }}
@@ -110,3 +111,19 @@
     </div>
   </div>
 </div>
+
+{{/* --- JSON-LD: OrganizationRole --- */}}
+{{ $schema := dict
+  "@context"   "https://schema.org"
+  "@type"      "OrganizationRole"
+  "roleName"   $page.Title
+  "startDate"  ($page.Date.Format "2006-01-02")
+  "namedPosition" $page.Title
+}}
+{{ with $page.Params.organization }}
+  {{ $schema = merge $schema (dict "worksFor" (dict "@type" "Organization" "name" .)) }}
+{{ end }}
+{{ if not $isCurrent }}
+  {{ $schema = merge $schema (dict "endDate" $endDisplay) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

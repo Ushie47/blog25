@@ -1,0 +1,19 @@
+{{/*
+  jsonld_flush.html — emits all JSON-LD schemas collected in .Store.
+  Call once per page just before </body>.
+
+  Card partials and single-page layouts write schemas to the page store
+  via: .Store.SetInMap "jsonld" $uniqueKey $jsonString
+  This partial reads them all out and wraps in a single <script> block.
+  Using a JSON array means Google can parse multiple schemas per page.
+*/}}
+{{ $items := .Store.Get "jsonld" }}
+{{ with $items }}
+  {{ $vals := slice }}
+  {{ range $k, $v := . }}
+    {{ $vals = $vals | append $v }}
+  {{ end }}
+  <script type="application/ld+json">
+  [{{ delimit $vals "," }}]
+  </script>
+{{ end }}

@@ -2,15 +2,16 @@
   Renders a single publication as a card with a left accent border.
 
   Usage:
-    {{ partial "publications/pub_card.html" . }}
+    {{ partial "publications/pub_card.html" (dict "page" . "root" $) }}
     (pass the publication page as context)
 
   Includes the BibTeX modal markup (one modal per card, identified by
   .File.UniqueID to avoid ID collisions on list pages).
 */}}
 
-{{ $page := . }}
-
+{{/* Extract root page for JSON-LD store — passed as dict from list/home pages */}}
+{{ $root := .root | default . }}
+{{ $page := .page | default . }}
 {{/*
   Determine the "primary" publication type for accent colour.
   We use a priority order so a paper that is both 'conference' and 'preprint'
@@ -108,3 +109,22 @@
 
   </div>
 </div>
+
+{{/* --- JSON-LD: ScholarlyArticle --- */}}
+{{ $authors := slice }}
+{{ range $page.Params.authors | default slice }}
+  {{ $authors = $authors | append (dict "@type" "Person" "name" .) }}
+{{ end }}
+{{ $schema := dict
+  "@context"      "https://schema.org"
+  "@type"         "ScholarlyArticle"
+  "headline"      $page.Title
+  "url"           $page.Permalink
+  "datePublished" ($page.Date.Format "2006-01-02")
+  "description"   ($page.Params.abstract | default "")
+  "author"        $authors
+}}
+{{ if $page.Params.doi }}
+  {{ $schema = merge $schema (dict "sameAs" (printf "https://doi.org/%s" $page.Params.doi)) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

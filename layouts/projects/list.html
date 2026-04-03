@@ -100,7 +100,7 @@
         <div class="project-item"
              data-categories="{{ .Params.categories | default slice | jsonify }}"
              data-status="{{ .Params.status | default "active" }}">
-          {{ partial "projects/project_card.html" . }}
+          {{ partial "projects/project_card.html" (dict "page" . "root" $) }}
         </div>
       {{ end }}
       <p id="project-empty" class="text-muted" style="display:none;">

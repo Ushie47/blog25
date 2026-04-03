@@ -143,4 +143,49 @@ The section id="bio" matches the navbar anchor href="#bio".
 </div>
 </div>
 </div>
+{{/* --- JSON-LD: Person ---
+     Written to store here; flushed by jsonld_flush.html in baseof.html.
+     Includes sameAs from social links and hasCredential from education.
+*/}}
+{{ $sameAs := slice }}
+{{ range $home.Params.social }}
+  {{ if not (hasPrefix .url "mailto:") }}
+    {{ $sameAs = $sameAs | append .url }}
+  {{ end }}
+{{ end }}
+
+{{ $credentials := slice }}
+{{ range $home.Params.education }}
+  {{ $cred := dict
+    "@type"       "EducationalOccupationalCredential"
+    "credentialCategory" "degree"
+    "name"        .degree
+    "recognizedBy" (dict "@type" "Organization" "name" .institution)
+  }}
+  {{ with .year }}
+    {{ $cred = merge $cred (dict "dateCreated" .) }}
+  {{ end }}
+  {{ $credentials = $credentials | append $cred }}
+{{ end }}
+
+{{ $person := dict
+  "@context"     "https://schema.org"
+  "@type"        "Person"
+  "name"         (site.Params.author_name | default "")
+  "url"          $home.Permalink
+  "jobTitle"     (site.Params.author_title | default "")
+  "email"        (site.Params.author_email | default "")
+  "sameAs"       $sameAs
+}}
+{{ with $home.Params.employer }}
+  {{ $org := dict "@type" "Organization" "name" . }}
+  {{ with $home.Params.employer_url }}
+    {{ $org = merge $org (dict "url" .) }}
+  {{ end }}
+  {{ $person = merge $person (dict "worksFor" $org) }}
+{{ end }}
+{{ if gt (len $credentials) 0 }}
+  {{ $person = merge $person (dict "hasCredential" $credentials) }}
+{{ end }}
+{{ $home.Store.SetInMap "jsonld" "person" ($person | jsonify) }}
 </section>

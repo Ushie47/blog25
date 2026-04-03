@@ -40,6 +40,8 @@
     {{ partial "cookie_consent.html" . }}
   {{ end }}
 
+  {{/* Flush JSON-LD data collected over the page */}}
+  {{ partial "jsonld_flush.html" . }}
   {{/* Per-page extra scripts — layouts can inject additional JS here */}}
   {{ block "scripts" . }}{{ end }}
 </body>

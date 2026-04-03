@@ -5,7 +5,8 @@
   Reuses author_list.html via the standard `page` parameter (authors field).
 */}}
 
-{{ $page := . }}
+{{ $root := .root | default . }}
+{{ $page := .page | default . }}
 
 {{ $prec := $page.Params.date_precision | default "day" }}
 {{ $date := $page.Date.Format "January 2, 2006" }}
@@ -75,3 +76,29 @@
 
 {{/* --- BibTeX modal (hidden until triggered by the BibTeX button) --- */}}
 {{ partial "bibtex_modal.html" $page }}
+
+{{/* --- JSON-LD: Patent as CreativeWork --- */}}
+{{ $authors := slice }}
+{{ range $page.Params.authors | default slice }}
+  {{ $authors = $authors | append (dict "@type" "Person" "name" .) }}
+{{ end }}
+{{ $numbers := slice }}
+{{ range ($page.Params.identifiers | default slice) }}
+  {{ with .number }}{{ $numbers = $numbers | append . }}{{ end }}
+{{ end }}
+{{ $schema := dict
+  "@context"      "https://schema.org"
+  "@type"         "CreativeWork"
+  "name"          $page.Title
+  "url"           $page.Permalink
+  "datePublished" ($page.Date.Format "2006-01-02")
+  "description"   ($page.Params.abstract | default "")
+  "author"        $authors
+}}
+{{ with $page.Params.assignee }}
+  {{ $schema = merge $schema (dict "copyrightHolder" (dict "@type" "Organization" "name" .)) }}
+{{ end }}
+{{ with $numbers }}
+  {{ $schema = merge $schema (dict "identifier" (index . 0)) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

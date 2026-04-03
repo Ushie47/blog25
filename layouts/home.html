@@ -61,7 +61,7 @@
       {{ $entries = sort $entries "page.Date" "desc" }}
       {{ $entries = sort $entries "sort_end" "desc" }}
       {{ range first $count $entries }}
-        {{ $cards = printf "%s%s" $cards (partial "experience/experience_card.html" .page) }}
+        {{ $cards = printf "%s%s" $cards (partial "experience/experience_card.html" (dict "page" .page "root" $home)) }}
       {{ end }}
     {{ end }}
 
@@ -70,7 +70,7 @@
     {{ $section := site.GetPage "/publications" }}
     {{ if $section }}
       {{ range first $count $section.Pages }}
-        {{ $cards = printf "%s%s" $cards (partial "publications/pub_card.html" .) }}
+        {{ $cards = printf "%s%s" $cards (partial "publications/pub_card.html" (dict "page" . "root" $home)) }}
       {{ end }}
     {{ end }}
 
@@ -79,7 +79,7 @@
     {{ $section := site.GetPage "/patents" }}
     {{ if $section }}
       {{ range first $count $section.Pages }}
-        {{ $cards = printf "%s%s" $cards (partial "patents/patent_card.html" .) }}
+        {{ $cards = printf "%s%s" $cards (partial "patents/patent_card.html" (dict "page" . "root" $home)) }}
       {{ end }}
     {{ end }}
 
@@ -88,7 +88,7 @@
     {{ $section := site.GetPage "/projects" }}
     {{ if $section }}
       {{ range first $count $section.Pages }}
-        {{ $cards = printf "%s%s" $cards (partial "projects/project_card.html" .) }}
+        {{ $cards = printf "%s%s" $cards (partial "projects/project_card.html" (dict "page" . "root" $home)) }}
       {{ end }}
     {{ end }}
 
@@ -97,7 +97,7 @@
     {{ $section := site.GetPage "/posts" }}
     {{ if $section }}
       {{ range first $count $section.Pages }}
-        {{ $cards = printf "%s%s" $cards (partial "posts/post_summary.html" .) }}
+        {{ $cards = printf "%s%s" $cards (partial "posts/post_summary.html" (dict "page" . "root" $home)) }}
       {{ end }}
     {{ end }}
 

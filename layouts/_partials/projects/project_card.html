@@ -13,7 +13,8 @@
     archived  → secondary (grey) — no longer active
 */}}
 
-{{ $page := . }}
+{{ $root := .root | default . }}
+{{ $page := .page | default . }}
 
 {{/* --- Format start date --- */}}
 {{ $prec      := $page.Params.date_precision | default "month" }}
@@ -95,3 +96,19 @@
 
   </div>
 </div>
+
+{{/* --- JSON-LD: SoftwareSourceCode or CreativeWork --- */}}
+{{ $type := "CreativeWork" }}
+{{ with $page.Params.github }}{{ $type = "SoftwareSourceCode" }}{{ end }}
+{{ $schema := dict
+  "@context"   "https://schema.org"
+  "@type"      $type
+  "name"       $page.Title
+  "url"        $page.Permalink
+  "description" ($page.Params.abstract | default "")
+  "dateCreated" ($page.Date.Format "2006-01-02")
+}}
+{{ with $page.Params.github }}
+  {{ $schema = merge $schema (dict "codeRepository" .) }}
+{{ end }}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}

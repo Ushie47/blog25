@@ -93,7 +93,7 @@
         */}}
         <div class="pub-item"
              data-pubtypes="{{ .Params.publication_types | jsonify }}">
-          {{ partial "publications/pub_card.html" . }}
+          {{ partial "publications/pub_card.html" (dict "page" . "root" $) }}
         </div>
       {{ end }}
 
