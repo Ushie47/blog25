@@ -111,9 +111,13 @@
 </div>
 
 {{/* --- JSON-LD: ScholarlyArticle --- */}}
-{{ $authors := slice }}
-{{ range $page.Params.authors | default slice }}
-  {{ $authors = $authors | append (dict "@type" "Person" "name" .) }}
+{{ $authors := $page.Params.authors | default slice }}
+{{ if eq (len $authors) 0 }}
+  {{ $authors = slice site.Params.author_name }}
+{{ end }}
+{{ $authors_udata := slice }}
+{{ range $authors | default slice }}
+  {{ $authors_udata = $authors_udata | append (dict "@type" "Person" "name" .) }}
 {{ end }}
 {{ $schema := dict
   "@context"      "https://schema.org"
@@ -122,7 +126,7 @@
   "url"           $page.Permalink
   "datePublished" ($page.Date.Format "2006-01-02")
   "description"   ($page.Params.abstract | default "")
-  "author"        $authors
+  "author"        $authors_udata
 }}
 {{ if $page.Params.doi }}
   {{ $schema = merge $schema (dict "sameAs" (printf "https://doi.org/%s" $page.Params.doi)) }}
