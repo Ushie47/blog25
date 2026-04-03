@@ -3,6 +3,9 @@
   Simpler than the full list page entry: no tags, just title, date, summary.
 */}}
 
+{{ $root := .root | default . }}
+{{ $page := .page | default . }}
+
 {{ $authors := .Params.authors | default slice }}
 {{ $authorDisplay := "" }}
 {{ if gt (len $authors) 0 }}
@@ -28,3 +31,22 @@
     {{ .Content | plainify | truncate 200 }}
   </p>
 </article>
+
+{{/* --- JSON-LD: BlogPosting --- */}}
+{{ $authors := .Params.authors | default slice }}
+{{ if eq (len $authors) 0 }}
+  {{ $authors = slice site.Params.author_name }}
+{{ end }}
+{{ $authors_udata := slice }}
+{{ range $authors | default slice }}
+  {{ $authors_udata = $authors_udata | append (dict "@type" "Person" "name" .) }}
+{{ end }}
+{{ $schema := dict
+  "@context"      "https://schema.org"
+  "@type"         "BlogPosting"
+  "headline"      $page.Title
+  "url"           $page.Permalink
+  "datePublished" ($page.Date.Format "2006-01-02")
+  "author"        $authors_udata
+}}
+{{ $root.Store.SetInMap "jsonld" $page.File.UniqueID ($schema | jsonify) }}
