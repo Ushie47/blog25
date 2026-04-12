@@ -34,6 +34,10 @@
 */}}
 <link rel="canonical" href="{{ .Permalink }}">
 
+{{with .OutputFormats.Get "rss" -}}
+  {{- printf `<link rel=%q type=%q href=%q title=%q>` .Rel .MediaType.Type .Permalink site.Title | safeHTML -}}
+{{- end }}
+
 {{/* --- Meta description ---
      Uses the page's explicit description param, falls back to .Summary
      (Hugo's auto-generated first ~70 words), falls back to site description.
