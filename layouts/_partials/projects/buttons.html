@@ -10,7 +10,8 @@
 <div class="d-flex flex-wrap gap-1 mt-2">
 
   {{ with $page.Params.github }}
-    <a href="{{ . }}"
+    {{ $githubURL := partial "url_resolver.html" (dict "page" $page "url" .) }}
+    <a href="{{ $githubURL }}"
        class="btn btn-outline-secondary btn-sm"
        target="_blank" rel="noopener">
       GitHub
@@ -18,7 +19,8 @@
   {{ end }}
 
   {{ with $page.Params.demo }}
-    <a href="{{ . }}"
+    {{ $demoURL := partial "url_resolver.html" (dict "page" $page "url" .) }}
+    <a href="{{ $demoURL }}"
        class="btn btn-outline-primary btn-sm"
        target="_blank" rel="noopener">
       Demo
@@ -26,7 +28,8 @@
   {{ end }}
 
   {{ with $page.Params.docs }}
-    <a href="{{ . }}"
+    {{ $docsURL := partial "url_resolver.html" (dict "page" $page "url" .) }}
+    <a href="{{ $docsURL }}"
        class="btn btn-outline-secondary btn-sm"
        target="_blank" rel="noopener">
       Docs
@@ -40,7 +43,8 @@
   {{ range $page.Params.links | default slice }}
     {{ $label := .label | default "Link" }}
     {{ $url   := .url }}
-    {{ with $url }}
+    {{ $finalURL := partial "url_resolver.html" (dict "page" $page "url" $url) }}
+    {{ with $finalURL }}
       <a href="{{ . }}"
          class="btn btn-outline-secondary btn-sm"
          target="_blank" rel="noopener">

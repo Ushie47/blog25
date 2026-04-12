@@ -1,0 +1,27 @@
+{{/*
+  Resolve a URL based on the following rules
+
+   - If the URL starts with http:// or https:// or //, it's an absolute URL
+   - If the URL starts with /, it's relative to the site root.
+   - Otherwise, try resolving the URL in the page bundle's resources
+
+  Call with a dict with keys url and page.
+*/}}
+
+{{ $url := .url }}
+{{ $page := .page }}
+{{ $finalURL := $url }}
+
+{{ if or (hasPrefix $url "http://") (hasPrefix $url "https://") (hasPrefix $url "//") }}
+  {{ $finalURL = $url }}
+{{ else if hasPrefix $url "/" }}
+  {{ $finalURL = $url | relURL }}
+{{ else }}
+  {{ with $page.Resources.GetMatch $url }}
+  {{ $finalURL = .RelPermalink }}
+  {{ else }}
+    {{/* Warn at build time rather than silently producing a broken button */}}
+    {{ warnf "publications/buttons.html: could not find PDF resource %q in page %s" $url $page.RelPermalink }}
+  {{ end }}
+{{ end }}
+{{ return $finalURL }}

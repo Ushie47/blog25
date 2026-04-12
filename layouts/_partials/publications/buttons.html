@@ -19,19 +19,7 @@
 
   {{- with $page.Params.pdf }}
     {{ $url := . }}
-    {{ $finalURL := "" }}
-    {{ if or (hasPrefix $url "http://") (hasPrefix $url "https://") (hasPrefix $url "//") }}
-      {{ $finalURL = $url }}
-    {{ else if hasPrefix $url "/" }}
-      {{ $finalURL = $url | relURL }}
-    {{ else }}
-      {{ with $page.Resources.GetMatch $url }}
-        {{ $finalURL = .RelPermalink }}
-      {{ else }}
-        {{/* Warn at build time rather than silently producing a broken button */}}
-        {{ warnf "publications/buttons.html: could not find PDF resource %q in page %s" $url $page.RelPermalink }}
-      {{ end }}
-    {{ end }}
+    {{ $finalURL := partial "url_resolver.html" (dict "page" $page "url" $url) }}
     {{ with $finalURL }}
       <a href="{{ . }}" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener">
         PDF
