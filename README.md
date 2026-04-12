@@ -1,12 +1,13 @@
 # Hugo Theme: Academic CV
 
-This is a simple academic CV style theme for [Hugo](//gohugo.io). It is meant to
-be a lightweight replacement for the hugo-academic theme by
-[gcushen](//github.com/gcushen) ([forked
-here](//github.com/skandhurkat/hugo-academic) and now [lives as a
-HugoBlox/Netlify theme](//github.com/HugoBlox/hugo-theme-academic-cv)). This is
-a clean-room implementation that is meant to provide a similar appearance and
-functionality, while minimizing third-party dependencies and feature bloat.
+This is a simple academic CV style theme for [Hugo](//gohugo.io). It is
+meant to be a lightweight replacement for the hugo-academic theme by
+[gcushen](//github.com/gcushen)
+([forked here](//github.com/skandhurkat/hugo-academic) and now
+[lives as a HugoBlox/Netlify theme](//github.com/HugoBlox/hugo-theme-academic-cv)).
+This is a clean-room implementation that is meant to provide a similar
+appearance and functionality, while minimizing third-party dependencies
+and feature bloat.
 
 You may view a preview of this theme on [my website](//skandhurkat.com).
 
@@ -42,8 +43,8 @@ Clone this theme as a submodule in your website's `themes/` folder
 git clone https://github.com/skandhurkat/hugo-theme-academic-cv themes/academic-cv
 ```
 
-Then, modify your site's `hugo.toml` to point to the new theme and to configure
-it:
+Then, modify your site's `hugo.toml` to point to the new theme and to
+configure it:
 
 ```toml
 baseURL        = 'https://example.com'
