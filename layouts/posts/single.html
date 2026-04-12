@@ -25,15 +25,7 @@
 {{/* Count headings recursively — .Fragments.Headings is a tree,
      so a single h2 with 5 h3 children counts as 1 at the top level.
      We flatten it by counting h2s plus all their h3 children. */}}
-{{ $headings  := .Fragments.Headings }}
-{{ $headingCount := 0 }}
-{{ range $headings }}
-  {{ $headingCount = add $headingCount 1 }}
-  {{ range .Headings }}
-    {{ $headingCount = add $headingCount 1 }}
-  {{ end }}
-{{ end }}
-{{ $showToc := ge $headingCount 3 }}
+{{ $showToc := partial "posts/show_toc.html" . }}
 
 <div class="container py-4">
   <div class="row">
@@ -161,14 +153,8 @@
 {{ end }}
 
 {{ define "scripts" }}
-{{ $headingCount := 0 }}
-{{ range .Fragments.Headings }}
-  {{ $headingCount = add $headingCount 1 }}
-  {{ range .Headings }}
-    {{ $headingCount = add $headingCount 1 }}
-  {{ end }}
-{{ end }}
-{{ if ge $headingCount 3 }}
+{{ $showToc := partial "posts/show_toc.html" . }}
+{{ if $showToc }}
 <script>
 (function () {
   var tocNav = document.getElementById('toc-nav');

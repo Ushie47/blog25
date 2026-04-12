@@ -1,0 +1,17 @@
+{{/*
+  show_toc.html – returns a boolean indicating whether a TOC should be shown on a
+  page or not. This is determined by whether there are more than three headings at
+  h2 and h3 levels.
+*/}}
+
+{{ $headings := .Fragments.Headings }}
+{{ $headingCount := 0 }}
+{{ range $headings }}
+  {{ range .Headings }}
+    {{ $headingCount = add $headingCount 1 }}
+    {{ range .Headings }}
+        {{ $headingCount = add $headingCount 1 }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return (ge $headingCount 3) }}
