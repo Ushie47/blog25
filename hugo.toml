@@ -104,3 +104,72 @@ summaryLength = 100
   # "light" = always light
   # "dark"  = always dark
   dark_mode = "auto"
+
+[markup]
+  [markup.goldmark]
+    duplicateResourceFiles = false
+    [markup.goldmark.extensions]
+      definitionList = true
+      linkify = true
+      linkifyProtocol = 'https'
+      strikethrough = true
+      table = true
+      taskList = true
+      [markup.goldmark.extensions.cjk]
+        eastAsianLineBreaks = false
+        eastAsianLineBreaksStyle = 'simple'
+        enable = false
+        escapedSpace = false
+      [markup.goldmark.extensions.extras]
+        [markup.goldmark.extensions.extras.delete]
+          enable = true
+        [markup.goldmark.extensions.extras.insert]
+          enable = true
+        [markup.goldmark.extensions.extras.mark]
+          enable = true
+        [markup.goldmark.extensions.extras.subscript]
+          enable = true
+        [markup.goldmark.extensions.extras.superscript]
+          enable = true
+      [markup.goldmark.extensions.footnote]
+        backlinkHTML = '&#x21a9;&#xfe0e;'
+        enable = true
+        enableAutoIDPrefix = false
+      [markup.goldmark.extensions.passthrough]
+        enable = false
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = ['\(', '\)']
+      [markup.goldmark.extensions.typographer]
+        apostrophe = '&rsquo;'
+        disable = false
+        ellipsis = '&hellip;'
+        emDash = '&mdash;'
+        enDash = '&ndash;'
+        leftAngleQuote = '&laquo;'
+        leftDoubleQuote = '&ldquo;'
+        leftSingleQuote = '&lsquo;'
+        rightAngleQuote = '&raquo;'
+        rightDoubleQuote = '&rdquo;'
+        rightSingleQuote = '&rsquo;'
+    [markup.goldmark.parser]
+      autoDefinitionTermID = false
+      autoHeadingID = true
+      autoIDType = 'github'
+      wrapStandAloneImageWithinParagraph = true
+      [markup.goldmark.parser.attribute]
+        block = false
+        title = true
+    [markup.goldmark.renderHooks]
+      [markup.goldmark.renderHooks.image]
+        useEmbedded = 'never'
+      [markup.goldmark.renderHooks.link]
+        useEmbedded = 'never'
+    [markup.goldmark.renderer]
+      hardWraps = false
+      unsafe = true
+      xhtml = false
+
+[outputs]
+  home    = ["HTML", "RSS", "JSON"]
+  section = ["HTML", "RSS"]

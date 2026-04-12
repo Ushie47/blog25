@@ -36,12 +36,18 @@
           integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
           crossorigin="anonymous"></script>
 
+  {{/* MathJax for rendering LaTeX math, if enabled */}}
+  {{ if .Param "maths" }}
+    {{- partial "maths.html" . -}}
+  {{ end }}
+
+  {{/* Cookie consent banner, if enabled */}}
   {{ if .Site.Params.cookie_consent }}
-    {{ partial "cookie_consent.html" . }}
+    {{- partial "cookie_consent.html" . -}}
   {{ end }}
 
   {{/* Flush JSON-LD data collected over the page */}}
-  {{ partial "jsonld_flush.html" . }}
+  {{- partial "jsonld_flush.html" . -}}
   {{/* Per-page extra scripts — layouts can inject additional JS here */}}
   {{ block "scripts" . }}{{ end }}
 </body>
