@@ -1,0 +1,62 @@
+{{/* Default classes */}}
+{{ $defaultClasses := slice "table" }}
+
+{{/* Get user classes from attributes, split by space */}}
+{{ $userClasses := slice }}
+{{ with .Attributes.class }}
+  {{ $userClasses = split . " " }}
+{{ end }}
+
+{{/* Merge default and user classes */}}
+{{ $allClasses := $defaultClasses }}
+{{ range $userClasses }}
+  {{ $allClasses = $allClasses | append . }}
+{{ end }}
+
+{{/* Remove duplicates and join with spaces using delimit */}}
+{{ $allClassesStr := delimit (uniq $allClasses) " " }}
+
+<div class="table-responsive">
+  <table
+    class="{{ $allClassesStr }}"
+    {{- range $k, $v := .Attributes }}
+      {{- if and $v (and (ne $k "class") (ne $k "caption")) }} {{/* Skip class attribute and caption */}}
+        {{- printf " %s=%q" $k $v | safeHTMLAttr }}
+      {{- end }}
+    {{- end }}>
+    {{- with .Attributes.caption }}
+      <caption>{{ . }}</caption>
+    {{- end }}
+    <thead>
+      {{- range .THead }}
+        <tr>
+          {{- range . }}
+            <th
+              scope="col"
+              {{- with .Alignment }}
+                {{- printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}
+              {{- end -}}
+            >
+              {{- .Text -}}
+            </th>
+          {{- end }}
+        </tr>
+      {{- end }}
+    </thead>
+    <tbody>
+      {{- range .TBody }}
+        <tr>
+          {{- range . }}
+            <td
+              {{- with .Alignment }}
+                {{- printf " style=%q" (printf "text-align: %s" .) | safeHTMLAttr }}
+              {{- end -}}
+            >
+              {{- .Text -}}
+            </td>
+          {{- end }}
+        </tr>
+      {{- end }}
+    </tbody>
+  </table>
+</div>
