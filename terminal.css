@@ -1,0 +1,21 @@
+/* Change background to dark gray */
+body {
+    background-color: #1a1a1d !important;
+    color: #e0e0e0 !important;
+}
+
+/* Adjust content background */
+.post-content,
+.site-header,
+.site-footer {
+    background-color: #2a2a2d !important;
+}
+
+/* Adjust link colors for better visibility */
+a {
+    color: #66b5ff !important;
+}
+
+a:hover {
+    color: #99ccff !important;
+}

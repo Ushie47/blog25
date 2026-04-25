@@ -2,11 +2,11 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Patents on Дavid Michael Francis</title>
-    <link>https://ushie47.github.io/blog25/patents/</link>
+    <link>http://localhost:1313/blog25/patents/</link>
     <description>Recent content in Patents on Дavid Michael Francis</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
     <lastBuildDate></lastBuildDate>
-    <atom:link href="https://ushie47.github.io/blog25/patents/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/blog25/patents/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>
